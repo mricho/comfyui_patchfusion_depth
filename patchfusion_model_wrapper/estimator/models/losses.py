@@ -11,7 +11,7 @@ import math
 from ..registry import MODELS
 from kornia.losses import dice_loss, focal_loss
 
-@MODELS.register_module()
+@MODELS.register_module(force=True)
 class SILogLoss(nn.Module):
     """SILog loss (pixel-wise)"""
     def __init__(self, beta=0.15, **kwargs):
@@ -173,7 +173,7 @@ class GeneralizedSoftDiceLoss(nn.Module):
             loss = loss.mean()
         return loss
 
-@MODELS.register_module()
+@MODELS.register_module(force=True)
 class EdgeClsLoss(nn.Module):
     """Error loss (pixel-wise)"""
     def __init__(self, focal_weight=0.5):
@@ -197,7 +197,7 @@ class EdgeClsLoss(nn.Module):
         return dice, focal
 
 
-@MODELS.register_module()
+@MODELS.register_module(force=True)
 class ErrorLoss(nn.Module):
     """Error loss (pixel-wise)"""
     def __init__(self, loss_type, focal_weight):
@@ -252,7 +252,7 @@ import matplotlib.pyplot as plt
 ######################################################
 # EdgeguidedRankingLoss
 #####################################################
-@MODELS.register_module()
+@MODELS.register_module(force=True)
 class EdgeguidedRankingLoss(nn.Module):
     def __init__(
         self, 
@@ -562,7 +562,7 @@ def compute_scale_and_shift(prediction, target, mask):
 
     return x_0, x_1
 
-@MODELS.register_module()
+@MODELS.register_module(force=True)
 class ScaleAndShiftInvariantLoss(nn.Module):
     def __init__(self, **kargs):
         super().__init__()
@@ -591,7 +591,7 @@ class ScaleAndShiftInvariantLoss(nn.Module):
         loss = nn.functional.l1_loss(scaled_prediction[mask], target[mask])
         return loss
 
-@MODELS.register_module()
+@MODELS.register_module(force=True)
 class ExistLoss(nn.Module):
     """ExistLoss loss (pixel-wise)"""
     def __init__(self, reweight_target):

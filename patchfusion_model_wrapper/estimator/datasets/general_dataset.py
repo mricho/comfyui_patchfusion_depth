@@ -142,7 +142,7 @@ class DepthMap:
         name = name.replace(".exr", "") # gta
         self.name = name
 
-@DATASETS.register_module()
+@DATASETS.register_module(force=True)
 class ImageDataset(UnrealStereo4kDataset):
     def __init__(
         self,

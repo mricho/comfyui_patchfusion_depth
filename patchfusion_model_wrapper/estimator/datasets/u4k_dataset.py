@@ -17,7 +17,7 @@ from ..registry import DATASETS
 from ..utils import get_boundaries, compute_metrics
 import cv2
 
-@DATASETS.register_module()
+@DATASETS.register_module(force=True)
 class UnrealStereo4kDataset(Dataset):
     def __init__(
         self,

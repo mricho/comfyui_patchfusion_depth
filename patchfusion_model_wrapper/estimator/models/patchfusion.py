@@ -52,7 +52,7 @@ from ...external.depth_anything.transform import Resize as ResizeDA
 
 
 
-@MODELS.register_module()
+@MODELS.register_module(force=True)
 class PatchFusion(BaselinePretrain, PyTorchModelHubMixin):
     def __init__(
         self, 

@@ -40,7 +40,7 @@ from ..zoedepth.models.zoedepth import ZoeDepth
 from ..zoedepth.models.base_models.midas import Resize as ResizeZoe
 from ...external.depth_anything.transform import Resize as ResizeDA
 
-@MODELS.register_module()
+@MODELS.register_module(force=True)
 class BaselinePretrain(nn.Module):
     def __init__(self, 
                  coarse_branch, 

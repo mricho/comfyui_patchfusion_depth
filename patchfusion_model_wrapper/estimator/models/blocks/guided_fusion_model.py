@@ -99,7 +99,7 @@ class Upv1(nn.Module):
         x = torch.cat([x2, x1], dim=1)
         return self.conv(x)
 
-@MODELS.register_module()
+@MODELS.register_module(force=True)
 class GuidedFusionPatchFusion(nn.Module):
     def __init__(
         self, 
