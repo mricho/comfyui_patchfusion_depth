@@ -36,7 +36,7 @@ from ..registry import MODELS
 from ..models import build_model
 from ..models.utils import generatemask, RunningAverageMap
 
-from .zoedepth.models.zoedepth import ZoeDepth
+from ..zoedepth.models.zoedepth import ZoeDepth
 from .zoedepth.models.base_models.midas import Resize as ResizeZoe
 from ...external.depth_anything.transform import Resize as ResizeDA
 
