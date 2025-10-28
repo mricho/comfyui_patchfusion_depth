@@ -1,3 +1,4 @@
 mmengine==0.10.7
 prettytable==3.16.0
 scikit-image==0.25.2
+wandb==0.22.2

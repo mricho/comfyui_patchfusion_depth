@@ -48,7 +48,7 @@ from ..zoedepth.models.layers.attractor import AttractorLayer, AttractorLayerUnn
 from ..zoedepth.models.layers.dist_layers import ConditionalLogBinomial
 from ..zoedepth.models.layers.localbins_layers import (Projector, SeedBinRegressor, SeedBinRegressorUnnormed)
 from ..zoedepth.models.base_models.midas import Resize as ResizeZoe
-from .....external.depth_anything.transform import Resize as ResizeDA
+from ...external.depth_anything.transform import Resize as ResizeDA
 
 
 
