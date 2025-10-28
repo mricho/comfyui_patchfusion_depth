@@ -131,9 +131,9 @@ class PatchFusion(BaselinePretrain, PyTorchModelHubMixin):
         
         if config.load_branch:
             print_log("Loading coarse_branch from {}".format(config.pretrain_model[0]), logger='current') 
-            print_log(self.coarse_branch.load_state_dict(torch.load(config.pretrain_model[0], map_location='cpu')['model_state_dict'], strict=True), logger='current') # coarse ckp
+            print_log(self.coarse_branch.load_state_dict(torch.load(config.pretrain_model[0], map_location='cpu', weights_only=False)['model_state_dict'], strict=True), logger='current') # coarse ckp
             print_log("Loading fine_branch from {}".format(config.pretrain_model[1]), logger='current')
-            print_log(self.fine_branch.load_state_dict(torch.load(config.pretrain_model[1], map_location='cpu')['model_state_dict'], strict=True), logger='current')
+            print_log(self.fine_branch.load_state_dict(torch.load(config.pretrain_model[1], map_location='cpu', weights_only=False)['model_state_dict'], strict=True), logger='current')
         
         # freeze all these parameters
         for param in self.coarse_branch.parameters():
@@ -513,7 +513,7 @@ class PatchFusion(BaselinePretrain, PyTorchModelHubMixin):
         
         # Download and load the model weights
         model_path = hf_hub_download(repo_id=model_name, filename="pytorch_model.bin")
-        state_dict = torch.load(model_path, map_location='cpu')
+        state_dict = torch.load(model_path, map_location='cpu', weights_only=False)
         
         # Load the state dict
         if 'model_state_dict' in state_dict:
