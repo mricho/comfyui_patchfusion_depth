@@ -76,6 +76,12 @@ class PatchFusion(BaselinePretrain, PyTorchModelHubMixin):
             config.load_branch = False
             config.coarse_branch.pretrained_resource = None
             config.fine_branch.pretrained_resource = None
+        
+        # Convert nested dictionaries to ConfigDict for attribute access
+        if hasattr(config, 'coarse_branch') and isinstance(config.coarse_branch, dict):
+            config.coarse_branch = ConfigDict(config.coarse_branch)
+        if hasattr(config, 'fine_branch') and isinstance(config.fine_branch, dict):
+            config.fine_branch = ConfigDict(config.fine_branch)
             
         self.config = config
         
@@ -457,6 +463,19 @@ class PatchFusion(BaselinePretrain, PyTorchModelHubMixin):
         """Load a pretrained model from Hugging Face Hub"""
         from huggingface_hub import hf_hub_download
         import json
+        def convert_to_config_dict(obj):
+            """Recursively convert dictionaries to ConfigDict objects"""
+            if isinstance(obj, dict):
+                # First convert all nested values
+                converted_dict = {}
+                for key, value in obj.items():
+                    converted_dict[key] = convert_to_config_dict(value)
+                # Then wrap with ConfigDict
+                return ConfigDict(converted_dict)
+            elif isinstance(obj, list):
+                return [convert_to_config_dict(item) for item in obj]
+            else:
+                return obj
         
         # Download the config file
         config_path = hf_hub_download(repo_id=model_name, filename="config.json")
@@ -465,8 +484,11 @@ class PatchFusion(BaselinePretrain, PyTorchModelHubMixin):
         with open(config_path, 'r') as f:
             config_dict = json.load(f)
         
+        # Convert all nested dicts to ConfigDict to support attribute access
+        config = convert_to_config_dict(config_dict)
+        
         # Create the model with the config
-        model = cls(config_dict)
+        model = cls(config)
         
         # Download and load the model weights
         model_path = hf_hub_download(repo_id=model_name, filename="pytorch_model.bin")
