@@ -3,17 +3,13 @@
 import torch
 from torchvision import transforms
 from PIL import Image
-import sys
-import pathlib
 import os
 import os.path as osp
 import torch
 import time
 from torch.utils.data import DataLoader
 
-sys.path.insert(0, os.path.join(pathlib.Path(__file__).parent.resolve(), "../models/PatchFusion"))
-sys.path.insert(0, os.path.join(pathlib.Path(__file__).parent.resolve(), "../models/PatchFusion/external"))
-from models.PatchFusion.estimator.models.patchfusion import PatchFusion
+from .patchfusion_model_wrapper import PatchFusion, RunnerInfo, setup_env, fix_random_seed, build_model, build_dataset, Tester
 
 
 
