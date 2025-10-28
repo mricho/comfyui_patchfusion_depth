@@ -29,7 +29,7 @@ import torch.nn.functional as F
 # from zoedepth.models.layers.swin_layers import G2LFusion
 from .swin_layers import G2LFusion
 from torchvision.ops import roi_align as torch_roi_align
-from ..registry import MODELS
+from ...registry import MODELS
 
 class DoubleConvWOBN(nn.Module):
     """(convolution => [BN] => ReLU) * 2"""
