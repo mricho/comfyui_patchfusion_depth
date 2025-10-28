@@ -223,11 +223,3 @@ class PatchFusion:
         depth_prediction = transforms.PILToTensor()(rgb_out_image).permute(1,2,0)[None,:,:,:]
         depth_prediction = depth_prediction[:,:,:,:3]/255.0
         return (depth_prediction,)
-
-NODE_CLASS_MAPPINGS = {
-    "PatchFusion": PatchFusion
-}
-
-NODE_DISPLAY_NAME_MAPPINGS = {
-    "PatchFusion": "PatchFusion depth"
-}
