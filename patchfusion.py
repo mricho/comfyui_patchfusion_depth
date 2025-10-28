@@ -1,5 +1,12 @@
 
 # from https://gist.github.com/lalunamel/6b582f865d2be881a501c574a136ce69
+import tensorflow as tf
+try:
+    _ = tf.estimator
+except AttributeError:
+    import tensorflow_estimator as tf_estimator
+    tf.estimator = tf_estimator
+
 import torch
 from torchvision import transforms
 from PIL import Image
@@ -7,7 +14,6 @@ import sys
 import pathlib
 import os
 import os.path as osp
-import torch
 import time
 from torch.utils.data import DataLoader
 
