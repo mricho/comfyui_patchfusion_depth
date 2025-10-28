@@ -13,7 +13,7 @@ from torch.utils.data import DataLoader
 
 sys.path.insert(0, os.path.join(pathlib.Path(__file__).parent.resolve(), "../models/PatchFusion"))
 sys.path.insert(0, os.path.join(pathlib.Path(__file__).parent.resolve(), "../models/PatchFusion/external"))
-#from models.PatchFusion.estimator.models.patchfusion import PatchFusion
+from models.PatchFusion.estimator.models.patchfusion import PatchFusion
 
 
 
@@ -23,11 +23,10 @@ def patchFusion(tmp_image_in, tmp_image_out, image_raw_shape = [2160, 3840], pat
     from mmengine.config import Config
     from mmengine.logging import MMLogger
 
-    from estimator.utils import RunnerInfo, setup_env, fix_random_seed
-    from estimator.models.builder import build_model
-    from estimator.datasets.builder import build_dataset
-    from estimator.tester import Tester
-    from estimator.models.patchfusion import PatchFusion
+    from models.PatchFusion.estimator.utils import RunnerInfo, setup_env, fix_random_seed
+    from models.PatchFusion.estimator.models.builder import build_model
+    from models.PatchFusion.estimator.datasets.builder import build_dataset
+    from models.PatchFusion.estimator.tester import Tester
     from mmengine import print_log
     # args = parse_args()
 
