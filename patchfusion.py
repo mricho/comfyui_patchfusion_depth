@@ -1,15 +1,19 @@
 
 # from https://gist.github.com/lalunamel/6b582f865d2be881a501c574a136ce69
+import os
+
 import torch
 from torchvision import transforms
 from PIL import Image
-import os
-import os.path as osp
-import torch
 import time
 from torch.utils.data import DataLoader
 
-from .patchfusion_model_wrapper import PatchFusion, RunnerInfo, setup_env, fix_random_seed, build_model, build_dataset, Tester
+from .patchfusion_model_wrapper.estimator.utils import RunnerInfo, setup_env, fix_random_seed
+from .patchfusion_model_wrapper.estimator.models.patchfusion import PatchFusion
+from .patchfusion_model_wrapper.estimator.datasets.general_dataset import ImageDataset
+from .patchfusion_model_wrapper.estimator.models.builder import build_model
+from .patchfusion_model_wrapper.estimator.datasets.builder import build_dataset
+from .patchfusion_model_wrapper.estimator.tester import Tester
 
 
 
@@ -19,10 +23,6 @@ def patchFusion(tmp_image_in, tmp_image_out, image_raw_shape = [2160, 3840], pat
     from mmengine.config import Config
     from mmengine.logging import MMLogger
 
-    from models.PatchFusion.estimator.utils import RunnerInfo, setup_env, fix_random_seed
-    from models.PatchFusion.estimator.models.builder import build_model
-    from models.PatchFusion.estimator.datasets.builder import build_dataset
-    from models.PatchFusion.estimator.tester import Tester
     from mmengine import print_log
     # args = parse_args()
 
@@ -32,7 +32,7 @@ def patchFusion(tmp_image_in, tmp_image_out, image_raw_shape = [2160, 3840], pat
     process_num = 2
         
     # load config
-    config = "models/PatchFusion/configs/patchfusion_depthanything/depthanything_general.py"
+    config = "/var/home/michael/comfy/ComfyUI/models/PatchFusion/configs/patchfusion_depthanything/depthanything_general.py"
     cfg = Config.fromfile(config)
     
     cfg.launcher = 'none'
@@ -80,7 +80,7 @@ def patchFusion(tmp_image_in, tmp_image_out, image_raw_shape = [2160, 3840], pat
     log_filename = 'eval_{}_{}_{}_{}_{}.log'.format(exp_cfg_filename, tag, ckp_name, dataset_name, timestamp)
     
     # prepare basic text logger
-    log_file = osp.join(work_dir, log_filename)
+    log_file = os.path.join(work_dir, log_filename)
     log_cfg = dict(log_level='INFO', log_file=log_file)
     log_cfg.setdefault('name', timestamp)
     log_cfg.setdefault('logger_name', 'patchstitcher')

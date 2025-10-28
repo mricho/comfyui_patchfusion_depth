@@ -1,3 +1,8 @@
+import os
+import sys
+
+sys.path.insert(0, os.path.dirname(__file__))
+
 from .patchfusion import PatchFusion
 
 NODE_CLASS_MAPPINGS = {
@@ -5,5 +10,5 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "PatchFusion": "PatchFusion depth"
+    "PatchFusion": "PatchFusion"
 }
