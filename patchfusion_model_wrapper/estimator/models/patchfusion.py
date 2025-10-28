@@ -451,4 +451,32 @@ class PatchFusion(BaselinePretrain, PyTorchModelHubMixin):
             depth = depth.unsqueeze(dim=0).unsqueeze(dim=0)
 
             return depth, {'rgb': image_lr, 'depth_pred': depth, 'depth_gt': depth_gt}
+    
+    @classmethod
+    def from_pretrained(cls, model_name):
+        """Load a pretrained model from Hugging Face Hub"""
+        from huggingface_hub import hf_hub_download
+        import json
+        
+        # Download the config file
+        config_path = hf_hub_download(repo_id=model_name, filename="config.json")
+        
+        # Load the config
+        with open(config_path, 'r') as f:
+            config_dict = json.load(f)
+        
+        # Create the model with the config
+        model = cls(config_dict)
+        
+        # Download and load the model weights
+        model_path = hf_hub_download(repo_id=model_name, filename="pytorch_model.bin")
+        state_dict = torch.load(model_path, map_location='cpu')
+        
+        # Load the state dict
+        if 'model_state_dict' in state_dict:
+            model.load_state_dict(state_dict['model_state_dict'], strict=False)
+        else:
+            model.load_state_dict(state_dict, strict=False)
+        
+        return model
 

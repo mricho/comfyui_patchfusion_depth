@@ -159,7 +159,7 @@ def patchFusion(tmp_image_in, tmp_image_out, image_raw_shape = [2160, 3840], pat
 
 
 
-class PatchFusion:
+class PatchFusionNode:
     def __init__(self):
         pass
 
