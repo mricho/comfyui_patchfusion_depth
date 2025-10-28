@@ -74,8 +74,29 @@ class PatchFusion(BaselinePretrain, PyTorchModelHubMixin):
             # we use MMengine ConfigDict to convert str to dict correctly here
             config = PretrainedConfig.from_dict(ConfigDict(**config).to_dict())
             config.load_branch = False
-            config.coarse_branch.pretrained_resource = None
-            config.fine_branch.pretrained_resource = None
+            
+            # Set URLs for automatic downloading from Hugging Face
+            if 'vitl' in model_name:
+                config.coarse_branch.pretrained_resource = f"url::https://huggingface.co/zhyever/PatchFusion/resolve/main/depthanything_vitl_u4k/coarse_pretrain/checkpoint_24.pth"
+                config.fine_branch.pretrained_resource = f"url::https://huggingface.co/zhyever/PatchFusion/resolve/main/depthanything_vitl_u4k/fine_pretrain/checkpoint_24.pth"
+            elif 'vitb' in model_name:
+                config.coarse_branch.pretrained_resource = f"url::https://huggingface.co/zhyever/PatchFusion/resolve/main/depthanything_vitb_u4k/coarse_pretrain/checkpoint_24.pth"
+                config.fine_branch.pretrained_resource = f"url::https://huggingface.co/zhyever/PatchFusion/resolve/main/depthanything_vitb_u4k/fine_pretrain/checkpoint_24.pth"
+            elif 'vits' in model_name:
+                config.coarse_branch.pretrained_resource = f"url::https://huggingface.co/zhyever/PatchFusion/resolve/main/depthanything_vits_u4k/coarse_pretrain/checkpoint_24.pth"
+                config.fine_branch.pretrained_resource = f"url::https://huggingface.co/zhyever/PatchFusion/resolve/main/depthanything_vits_u4k/fine_pretrain/checkpoint_24.pth"
+            elif 'zoedepth' in model_name:
+                config.coarse_branch.pretrained_resource = f"url::https://huggingface.co/zhyever/PatchFusion/resolve/main/zoedepth_u4k/coarse_pretrain/checkpoint_24.pth"
+                config.fine_branch.pretrained_resource = f"url::https://huggingface.co/zhyever/PatchFusion/resolve/main/zoedepth_u4k/fine_pretrain/checkpoint_24.pth"
+            else:
+                # Fallback to None if model type is not recognized
+                config.coarse_branch.pretrained_resource = None
+                config.fine_branch.pretrained_resource = None
+            
+            # Debug: Print the configured URLs
+            print(f"DEBUG: Model name: {model_name}")
+            print(f"DEBUG: Coarse branch pretrained_resource: {config.coarse_branch.pretrained_resource}")
+            print(f"DEBUG: Fine branch pretrained_resource: {config.fine_branch.pretrained_resource}")
         
         # Convert nested dictionaries to ConfigDict for attribute access
         if hasattr(config, 'coarse_branch') and isinstance(config.coarse_branch, dict):
