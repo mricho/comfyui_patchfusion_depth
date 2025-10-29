@@ -138,7 +138,7 @@ def patchFusion(tmp_image_in, tmp_image_out, image_raw_shape = [2160, 3840], pat
         if hasattr(model, 'load_dict'):
             print_log(model.load_dict(torch.load(cfg.ckp_path, weights_only=False)['model_state_dict']), logger='current')
         else:
-            print_log(model.load_state_dict(torch.load(cfg.ckp_path, weights_only=False)['model_state_dict'], strict=True), logger='current')
+            print_log(model.load_state_dict(torch.load(cfg.ckp_path, weights_only=False)['model_state_dict'], strict=False), logger='current')
     else:
         print_log('Checkpoint Path: {}. Loading from the huggingface repo'.format(cfg.ckp_path), logger='current')
         assert cfg.ckp_path in \
