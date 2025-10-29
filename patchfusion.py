@@ -234,7 +234,23 @@ class PatchFusionNode:
         rgb_image = rgb_image.permute(0,3,1,2)
         pil_rgb_image = transforms.ToPILImage()(rgb_image[0])
         pil_rgb_image.save(image_path)
-        patchFusion(temp_in_path , temp_out_path, [raw_height, raw_width], [patch_split_height, patch_split_width], depth_type)
+
+        # Use actual image size and auto-adjust patch splits to satisfy divisibility
+        actual_width, actual_height = pil_rgb_image.size
+        adjusted_psh = max(1, int(patch_split_height))
+        adjusted_psw = max(1, int(patch_split_width))
+        while actual_width % (2 * adjusted_psw) != 0 and adjusted_psw > 1:
+            adjusted_psw -= 1
+        while actual_height % (2 * adjusted_psh) != 0 and adjusted_psh > 1:
+            adjusted_psh -= 1
+
+        patchFusion(
+            temp_in_path,
+            temp_out_path,
+            [actual_height, actual_width],
+            [adjusted_psh, adjusted_psw],
+            depth_type
+        )
         # load image
         rgb_out_image = Image.open(os.path.join(temp_out_path, 'rgb_in.png'))
         rgb_out_image.putalpha(1) 
