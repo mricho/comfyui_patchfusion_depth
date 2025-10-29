@@ -17,7 +17,7 @@ from .patchfusion_model_wrapper.estimator.tester import Tester
 
 
 
-def patchFusion(tmp_image_in, tmp_image_out, image_raw_shape = [2160, 3840], patch_split_num = [4, 4]):
+def patchFusion(tmp_image_in, tmp_image_out, image_raw_shape = [2160, 3840], patch_split_num = [4, 4], depth_type: str = "DepthAnything ViT-L/14"):
 
     from mmengine.utils import mkdir_or_exist
     from mmengine.config import Config
@@ -32,8 +32,24 @@ def patchFusion(tmp_image_in, tmp_image_out, image_raw_shape = [2160, 3840], pat
     process_num = 2
         
     # load config
-    #config = "/var/home/michael/comfy/ComfyUI/models/PatchFusion/configs/patchfusion_depthanything/depthanything_general.py"
-    config = "/workspace/SwarmUI/dlbackend/ComfyUI/models/PatchFusion/configs/patchfusion_depthanything/depthanything_general.py"
+    # Resolve config path and checkpoint based on selected depth type
+    base_cfg_dir = "/var/home/michael/comfy/ComfyUI/models/PatchFusion/configs"
+    if depth_type == "DepthAnything ViT-S/14":
+        config = f"{base_cfg_dir}/patchfusion_depthanything/depthanything_general.py"
+        ckp_path = "Zhyever/patchfusion_depth_anything_vits14"
+    elif depth_type == "DepthAnything ViT-B/14":
+        config = f"{base_cfg_dir}/patchfusion_depthanything/depthanything_general.py"
+        ckp_path = "Zhyever/patchfusion_depth_anything_vitb14"
+    elif depth_type == "DepthAnything ViT-L/14":
+        config = f"{base_cfg_dir}/patchfusion_depthanything/depthanything_general.py"
+        ckp_path = "Zhyever/patchfusion_depth_anything_vitl14"
+    elif depth_type == "ZoeDepth":
+        config = f"{base_cfg_dir}/patchfusion_zoedepth/zoedepth_general.py"
+        ckp_path = "Zhyever/patchfusion_zoedepth"
+    else:
+        # Fallback to ViT-L/14 if an unknown option is provided
+        config = f"{base_cfg_dir}/patchfusion_depthanything/depthanything_general.py"
+        ckp_path = "Zhyever/patchfusion_depth_anything_vitl14"
     cfg = Config.fromfile(config)
     
     cfg.launcher = 'none'
@@ -45,7 +61,6 @@ def patchFusion(tmp_image_in, tmp_image_out, image_raw_shape = [2160, 3840], pat
     cfg.work_dir = work_dir
         
     mkdir_or_exist(cfg.work_dir)
-    ckp_path = "Zhyever/patchfusion_depth_anything_vitl14"
     cfg.ckp_path = ckp_path
     
     # fix seed
@@ -119,9 +134,9 @@ def patchFusion(tmp_image_in, tmp_image_out, image_raw_shape = [2160, 3840], pat
     else:
         print_log('Checkpoint Path: {}. Loading from the huggingface repo'.format(cfg.ckp_path), logger='current')
         assert cfg.ckp_path in \
-            ['Zhyever/patchfusion_depth_anything_vits14', 
-             'Zhyever/patchfusion_depth_anything_vitb14', 
-             'Zhyever/patchfusion_depth_anything_vitl14', 
+            ['Zhyever/patchfusion_depth_anything_vits14',
+             'Zhyever/patchfusion_depth_anything_vitb14',
+             'Zhyever/patchfusion_depth_anything_vitl14',
              'Zhyever/patchfusion_zoedepth'], 'Invalid model name'
         model = PatchFusion.from_pretrained(cfg.ckp_path)
     model.eval()
@@ -168,6 +183,12 @@ class PatchFusionNode:
     def INPUT_TYPES(s):
         return {
             "required": {
+                "depth_type": ("STRING", {"default": "DepthAnything ViT-L/14", "choices": [
+                    "DepthAnything ViT-S/14",
+                    "DepthAnything ViT-B/14",
+                    "DepthAnything ViT-L/14",
+                    "ZoeDepth"
+                ]}),
                 "rgb_image": ("IMAGE",),
                 "patch_split_height": ("INT",{
                     "default": 2,
@@ -199,7 +220,7 @@ class PatchFusionNode:
 
     CATEGORY = "PatchFusion"
 
-    def run(self, rgb_image, patch_split_height, patch_split_width, raw_height, raw_width):
+    def run(self, depth_type, rgb_image, patch_split_height, patch_split_width, raw_height, raw_width):
         # Define the total pixel counts for SD and SDXL
         import tempfile
         temp_dir = tempfile.mkdtemp()
@@ -212,7 +233,7 @@ class PatchFusionNode:
         rgb_image = rgb_image.permute(0,3,1,2)
         pil_rgb_image = transforms.ToPILImage()(rgb_image[0])
         pil_rgb_image.save(image_path)
-        patchFusion(temp_in_path , temp_out_path, [raw_height, raw_width], [ patch_split_height, patch_split_width])
+        patchFusion(temp_in_path , temp_out_path, [raw_height, raw_width], [patch_split_height, patch_split_width], depth_type)
         # load image
         rgb_out_image = Image.open(os.path.join(temp_out_path, 'rgb_in.png'))
         rgb_out_image.putalpha(1) 
