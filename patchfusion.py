@@ -33,7 +33,8 @@ def patchFusion(tmp_image_in, tmp_image_out, image_raw_shape = [2160, 3840], pat
         
     # load config
     # Resolve config path and checkpoint based on selected depth type
-    base_cfg_dir = "/var/home/michael/comfy/ComfyUI/models/PatchFusion/configs"
+            
+    base_cfg_dir = "/workspace/SwarmUI/dlbackend/ComfyUI/models/PatchFusion/configs"
     if depth_type == "DepthAnything ViT-S/14":
         config = f"{base_cfg_dir}/patchfusion_depthanything/depthanything_general.py"
         ckp_path = "Zhyever/patchfusion_depth_anything_vits14"
