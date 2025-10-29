@@ -131,9 +131,9 @@ class PatchFusion(BaselinePretrain, PyTorchModelHubMixin):
         
         if config.load_branch:
             print_log("Loading coarse_branch from {}".format(config.pretrain_model[0]), logger='current') 
-            print_log(self.coarse_branch.load_state_dict(torch.load(config.pretrain_model[0], map_location='cpu', weights_only=False)['model_state_dict'], strict=True), logger='current') # coarse ckp
+            print_log(self.coarse_branch.load_state_dict(torch.load(config.pretrain_model[0], map_location='cpu', weights_only=False)['model_state_dict'], strict=False), logger='current') # coarse ckp
             print_log("Loading fine_branch from {}".format(config.pretrain_model[1]), logger='current')
-            print_log(self.fine_branch.load_state_dict(torch.load(config.pretrain_model[1], map_location='cpu', weights_only=False)['model_state_dict'], strict=True), logger='current')
+            print_log(self.fine_branch.load_state_dict(torch.load(config.pretrain_model[1], map_location='cpu', weights_only=False)['model_state_dict'], strict=False), logger='current')
         
         # freeze all these parameters
         for param in self.coarse_branch.parameters():
