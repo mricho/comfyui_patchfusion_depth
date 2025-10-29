@@ -32,7 +32,8 @@ def patchFusion(tmp_image_in, tmp_image_out, image_raw_shape = [2160, 3840], pat
     process_num = 2
         
     # load config
-    config = "/var/home/michael/comfy/ComfyUI/models/PatchFusion/configs/patchfusion_depthanything/depthanything_general.py"
+    #config = "/var/home/michael/comfy/ComfyUI/models/PatchFusion/configs/patchfusion_depthanything/depthanything_general.py"
+    config = "/workspace/SwarmUI/dlbackend/ComfyUI/models/PatchFusion/configs/patchfusion_depthanything/depthanything_general.py"
     cfg = Config.fromfile(config)
     
     cfg.launcher = 'none'
