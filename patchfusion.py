@@ -3,6 +3,7 @@
 import os
 
 import torch
+from contextlib import nullcontext
 from torchvision import transforms
 from PIL import Image
 import time
@@ -156,8 +157,6 @@ def patchFusion(tmp_image_in, tmp_image_out, image_raw_shape = [2160, 3840], pat
         logger.info(model)
     else:
         model.cuda()
-        if precision == 'fp16':
-            model.half()
         
     if runner_info.distributed:
         val_sampler = torch.utils.data.distributed.DistributedSampler(dataset, shuffle=False)
@@ -180,7 +179,9 @@ def patchFusion(tmp_image_in, tmp_image_out, image_raw_shape = [2160, 3840], pat
         dataloader=val_dataloader,
         model=model)
     
-    tester.run(cai_mode, process_num=process_num, image_raw_shape=image_raw_shape, patch_split_num=patch_split_num)
+    amp_ctx = torch.autocast(device_type='cuda', dtype=torch.float16) if precision == 'fp16' else nullcontext()
+    with amp_ctx:
+        tester.run(cai_mode, process_num=process_num, image_raw_shape=image_raw_shape, patch_split_num=patch_split_num)
 
 
 
