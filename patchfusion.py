@@ -17,7 +17,7 @@ from .patchfusion_model_wrapper.estimator.tester import Tester
 
 
 
-def patchFusion(tmp_image_in, tmp_image_out, image_raw_shape = [2160, 3840], patch_split_num = [4, 4], depth_type: str = "DepthAnything ViT-L/14"):
+def patchFusion(tmp_image_in, tmp_image_out, image_raw_shape = [2160, 3840], patch_split_num = [4, 4], depth_type: str = "DepthAnything ViT-L/14", precision: str = "auto"):
 
     from mmengine.utils import mkdir_or_exist
     from mmengine.config import Config
@@ -31,6 +31,12 @@ def patchFusion(tmp_image_in, tmp_image_out, image_raw_shape = [2160, 3840], pat
     cai_mode = 'm1'
     process_num = 2
         
+    # ensure external libs have a writable persistent work directory for aux weights
+    try:
+        os.makedirs('./work_dir', exist_ok=True)
+    except Exception:
+        pass
+
     # load config
     # Resolve config path and checkpoint based on selected depth type
             
@@ -150,6 +156,8 @@ def patchFusion(tmp_image_in, tmp_image_out, image_raw_shape = [2160, 3840], pat
         logger.info(model)
     else:
         model.cuda()
+        if precision == 'fp16':
+            model.half()
         
     if runner_info.distributed:
         val_sampler = torch.utils.data.distributed.DistributedSampler(dataset, shuffle=False)
@@ -190,6 +198,7 @@ class PatchFusionNode:
                     "ZoeDepth",
                     "DepthAnything ViT-L/14"
                 ],),
+                "precision": (["auto", "fp16", "fp32"],),
                 "rgb_image": ("IMAGE",),
                 "patch_split_height": ("INT",{
                     "default": 2,
@@ -221,7 +230,7 @@ class PatchFusionNode:
 
     CATEGORY = "PatchFusion"
 
-    def run(self, depth_type, rgb_image, patch_split_height, patch_split_width, raw_height, raw_width):
+    def run(self, depth_type, precision, rgb_image, patch_split_height, patch_split_width, raw_height, raw_width):
         # Define the total pixel counts for SD and SDXL
         import tempfile
         temp_dir = tempfile.mkdtemp()
@@ -249,7 +258,8 @@ class PatchFusionNode:
             temp_out_path,
             [actual_height, actual_width],
             [adjusted_psh, adjusted_psw],
-            depth_type
+            depth_type,
+            precision
         )
         # load image
         rgb_out_image = Image.open(os.path.join(temp_out_path, 'rgb_in.png'))
