@@ -24,7 +24,7 @@
 
 import torch
 
-def load_state_dict(model, state_dict):
+def load_state_dict(model, state_dict, strict: bool = False):
     """Load state_dict into model, handling DataParallel and DistributedDataParallel. Also checks for "model" key in state_dict.
 
     DataParallel prefixes state_dict keys with 'module.' when saving.
@@ -46,22 +46,25 @@ def load_state_dict(model, state_dict):
 
         state[k] = v
 
-    model.load_state_dict(state)
-    print("Loaded successfully")
+    missing, unexpected = model.load_state_dict(state, strict=strict)
+    if not strict and (missing or unexpected):
+        print(f"Loaded with non-strict matching. Missing: {len(missing)}, Unexpected: {len(unexpected)}")
+    else:
+        print("Loaded successfully")
     return model
 
 
-def load_wts(model, checkpoint_path):
+def load_wts(model, checkpoint_path, strict: bool = False):
     ckpt = torch.load(checkpoint_path, map_location='cpu', weights_only=False)
-    return load_state_dict(model, ckpt)
+    return load_state_dict(model, ckpt, strict=strict)
 
 
-def load_state_dict_from_url(model, url, **kwargs):
+def load_state_dict_from_url(model, url, strict: bool = False, **kwargs):
     state_dict = torch.hub.load_state_dict_from_url(url, map_location='cpu', **kwargs)
-    return load_state_dict(model, state_dict)
+    return load_state_dict(model, state_dict, strict=strict)
 
 
-def load_state_from_resource(model, resource: str):
+def load_state_from_resource(model, resource: str, strict: bool = False):
     """Loads weights to the model from a given resource. A resource can be of following types:
         1. URL. Prefixed with "url::"
                 e.g. url::http(s)://url.resource.com/ckpt.pt
@@ -81,11 +84,11 @@ def load_state_from_resource(model, resource: str):
 
     if resource.startswith('url::'):
         url = resource.split('url::')[1]
-        return load_state_dict_from_url(model, url, progress=True)
+        return load_state_dict_from_url(model, url, progress=True, strict=strict)
 
     elif resource.startswith('local::'):
         path = resource.split('local::')[1]
-        return load_wts(model, path)
+        return load_wts(model, path, strict=strict)
         
     else:
         raise ValueError("Invalid resource type, only url:: and local:: are supported")
