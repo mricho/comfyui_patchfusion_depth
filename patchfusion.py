@@ -184,12 +184,12 @@ class PatchFusionNode:
     def INPUT_TYPES(s):
         return {
             "required": {
-                "depth_type": ("STRING", {"default": "DepthAnything ViT-L/14", "choices": [
+                "depth_type": ([
                     "DepthAnything ViT-S/14",
                     "DepthAnything ViT-B/14",
-                    "DepthAnything ViT-L/14",
-                    "ZoeDepth"
-                ]}),
+                    "ZoeDepth",
+                    "DepthAnything ViT-L/14"
+                ],),
                 "rgb_image": ("IMAGE",),
                 "patch_split_height": ("INT",{
                     "default": 2,
