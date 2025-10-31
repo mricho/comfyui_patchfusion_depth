@@ -203,21 +203,29 @@ class PatchFusionNode:
                 "rgb_image": ("IMAGE",),
                 "patch_split_height": ("INT",{
                     "default": 2,
+                    "min": 1,
+                    "max": 64,
                     "step":1,
                     "display": "number"
                 }),
                 "patch_split_width": ("INT",{
                     "default": 2,
+                    "min": 1,
+                    "max": 64,
                     "step":1,
                     "display": "number"
                 }),
                 "raw_height": ("INT",{
                     "default": 2160,
+                    "min": 64,
+                    "max": 16384,
                     "step":1,
                     "display": "number"
                 }),
                 "raw_width": ("INT",{
                     "default": 3840,
+                    "min": 64,
+                    "max": 16384,
                     "step":1,
                     "display": "number"
                 }),
